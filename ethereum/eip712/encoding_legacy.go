@@ -26,7 +26,8 @@ import (
 	txTypes "github.com/cosmos/cosmos-sdk/types/tx"
 
 	apitypes "github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/evmos/ethermint/types"
+
+	"github.com/validationcloud/ethermint/types"
 )
 
 type aminoMessage struct {
@@ -86,9 +87,9 @@ func legacyDecodeAminoSignDoc(signDocBytes []byte) (apitypes.TypedData, error) {
 	}
 
 	// Validate payload messages
-	msgs := make([]sdk.Msg, len(aminoDoc.Msgs))
+	msgs := make([]sdk.LegacyMsg, len(aminoDoc.Msgs))
 	for i, jsonMsg := range aminoDoc.Msgs {
-		var m sdk.Msg
+		var m sdk.LegacyMsg
 		if err := aminoCodec.UnmarshalJSON(jsonMsg, &m); err != nil {
 			return apitypes.TypedData{}, fmt.Errorf("failed to unmarshal sign doc message: %w", err)
 		}
@@ -160,9 +161,9 @@ func legacyDecodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error
 	}
 
 	// Validate payload messages
-	msgs := make([]sdk.Msg, len(body.Messages))
+	msgs := make([]sdk.LegacyMsg, len(body.Messages))
 	for i, protoMsg := range body.Messages {
-		var m sdk.Msg
+		var m sdk.LegacyMsg
 		if err := protoCodec.UnpackAny(protoMsg, &m); err != nil {
 			return apitypes.TypedData{}, fmt.Errorf("could not unpack message object with error %w", err)
 		}
@@ -193,7 +194,10 @@ func legacyDecodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error
 		FeePayer: feePayer,
 	}
 
-	tip := authInfo.Tip
+	newMsgs := make([]sdk.Msg, len(msgs))
+	for i, newMsg := range msgs {
+		newMsgs[i] = newMsg
+	}
 
 	// WrapTxToTypedData expects the payload as an Amino Sign Doc
 	signBytes := legacytx.StdSignBytes(
@@ -202,9 +206,8 @@ func legacyDecodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error
 		signerInfo.Sequence,
 		body.TimeoutHeight,
 		*stdFee,
-		msgs,
+		newMsgs,
 		body.Memo,
-		tip,
 	)
 
 	typedData, err := LegacyWrapTxToTypedData(
@@ -223,7 +226,7 @@ func legacyDecodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error
 
 // validatePayloadMessages ensures that the transaction messages can be represented in an EIP-712
 // encoding by checking that messages exist, are of the same type, and share a single signer.
-func legacyValidatePayloadMessages(msgs []sdk.Msg) error {
+func legacyValidatePayloadMessages(msgs []sdk.LegacyMsg) error {
 	if len(msgs) == 0 {
 		return errors.New("unable to build EIP-712 payload: transaction does contain any messages")
 	}
