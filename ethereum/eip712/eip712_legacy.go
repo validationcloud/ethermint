@@ -12,7 +12,7 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
+// along with the Ethermint library. If not, see https://github.com/validationcloud/ethermint/blob/main/LICENSE
 package eip712
 
 import (
@@ -382,7 +382,7 @@ var (
 	addressType   = reflect.TypeOf(common.Address{})
 	bigIntType    = reflect.TypeOf(big.Int{})
 	cosmIntType   = reflect.TypeOf(sdkmath.Int{})
-	cosmDecType   = reflect.TypeOf(sdk.Dec{})
+	cosmDecType   = reflect.TypeOf(sdkmath.LegacyDec{})
 	timeType      = reflect.TypeOf(time.Time{})
 	cosmosAnyType = reflect.TypeOf(&codectypes.Any{})
 	edType        = reflect.TypeOf(ed25519.PubKey{})

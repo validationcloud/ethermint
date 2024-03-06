@@ -12,21 +12,21 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
+// along with the Ethermint library. If not, see https://github.com/validationcloud/ethermint/blob/main/LICENSE
 package eip712
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txTypes "github.com/cosmos/cosmos-sdk/types/tx"
 
 	apitypes "github.com/ethereum/go-ethereum/signer/core/apitypes"
-	"github.com/evmos/ethermint/types"
+
+	"github.com/validationcloud/ethermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 )
@@ -35,15 +35,6 @@ var (
 	protoCodec codec.ProtoCodecMarshaler
 	aminoCodec *codec.LegacyAmino
 )
-
-// SetEncodingConfig set the encoding config to the singleton codecs (Amino and Protobuf).
-// The process of unmarshaling SignDoc bytes into a SignDoc object requires having a codec
-// populated with all relevant message types. As a result, we must call this method on app
-// initialization with the app's encoding config.
-func SetEncodingConfig(cfg params.EncodingConfig) {
-	aminoCodec = cfg.Amino
-	protoCodec = codec.NewProtoCodec(cfg.InterfaceRegistry)
-}
 
 // GetEIP712BytesForMsg returns the EIP-712 object bytes for the given SignDoc bytes by decoding the bytes into
 // an EIP-712 object, then converting via WrapTxToTypedData. See https://eips.ethereum.org/EIPS/eip-712 for more.
@@ -103,9 +94,9 @@ func decodeAminoSignDoc(signDocBytes []byte) (apitypes.TypedData, error) {
 	}
 
 	// Validate payload messages
-	msgs := make([]sdk.Msg, len(aminoDoc.Msgs))
+	msgs := make([]sdk.LegacyMsg, len(aminoDoc.Msgs))
 	for i, jsonMsg := range aminoDoc.Msgs {
-		var m sdk.Msg
+		var m sdk.LegacyMsg
 		if err := aminoCodec.UnmarshalJSON(jsonMsg, &m); err != nil {
 			return apitypes.TypedData{}, fmt.Errorf("failed to unmarshal sign doc message: %w", err)
 		}
@@ -165,9 +156,9 @@ func decodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error) {
 	}
 
 	// Validate payload messages
-	msgs := make([]sdk.Msg, len(body.Messages))
+	msgs := make([]sdk.LegacyMsg, len(body.Messages))
 	for i, protoMsg := range body.Messages {
-		var m sdk.Msg
+		var m sdk.LegacyMsg
 		if err := protoCodec.UnpackAny(protoMsg, &m); err != nil {
 			return apitypes.TypedData{}, fmt.Errorf("could not unpack message object with error %w", err)
 		}
@@ -190,8 +181,10 @@ func decodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error) {
 		Gas:    authInfo.Fee.GasLimit,
 	}
 
-	tip := authInfo.Tip
-
+	newMsgs := make([]sdk.Msg, len(msgs))
+	for i, msg := range msgs {
+		newMsgs[i] = msg
+	}
 	// WrapTxToTypedData expects the payload as an Amino Sign Doc
 	signBytes := legacytx.StdSignBytes(
 		signDoc.ChainId,
@@ -199,9 +192,8 @@ func decodeProtobufSignDoc(signDocBytes []byte) (apitypes.TypedData, error) {
 		signerInfo.Sequence,
 		body.TimeoutHeight,
 		*stdFee,
-		msgs,
+		newMsgs,
 		body.Memo,
-		tip,
 	)
 
 	typedData, err := WrapTxToTypedData(
@@ -227,7 +219,7 @@ func validateCodecInit() error {
 
 // validatePayloadMessages ensures that the transaction messages can be represented in an EIP-712
 // encoding by checking that messages exist and share a single signer.
-func validatePayloadMessages(msgs []sdk.Msg) error {
+func validatePayloadMessages(msgs []sdk.LegacyMsg) error {
 	if len(msgs) == 0 {
 		return errors.New("unable to build EIP-712 payload: transaction does contain any messages")
 	}

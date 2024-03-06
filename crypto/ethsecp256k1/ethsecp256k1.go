@@ -12,7 +12,7 @@
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
+// along with the Ethermint library. If not, see https://github.com/validationcloud/ethermint/blob/main/LICENSE
 package ethsecp256k1
 
 import (
@@ -26,8 +26,8 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/evmos/ethermint/ethereum/eip712"
-	tmcrypto "github.com/tendermint/tendermint/crypto"
+
+	"github.com/validationcloud/ethermint/ethereum/eip712"
 )
 
 const (
@@ -158,13 +158,13 @@ var (
 
 // Address returns the address of the ECDSA public key.
 // The function will return an empty address if the public key is invalid.
-func (pubKey PubKey) Address() tmcrypto.Address {
+func (pubKey PubKey) Address() cryptotypes.Address {
 	pubk, err := crypto.DecompressPubkey(pubKey.Key)
 	if err != nil {
 		return nil
 	}
 
-	return tmcrypto.Address(crypto.PubkeyToAddress(*pubk).Bytes())
+	return crypto.PubkeyToAddress(*pubk).Bytes()
 }
 
 // Bytes returns the raw bytes of the ECDSA public key.

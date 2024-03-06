@@ -5,12 +5,13 @@ package types
 
 import (
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,7 +28,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // ExtensionOptionDynamicFeeTx is an extension option that specifies the maxPrioPrice for cosmos tx
 type ExtensionOptionDynamicFeeTx struct {
 	// max_priority_price is the same as `max_priority_fee_per_gas` in eip-1559 spec
-	MaxPriorityPrice github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=max_priority_price,json=maxPriorityPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"max_priority_price"`
+	MaxPriorityPrice github_com_cosmos_cosmos_sdk_types.IntProto `protobuf:"bytes,1,opt,name=max_priority_price,json=maxPriorityPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"max_priority_price"`
 }
 
 func (m *ExtensionOptionDynamicFeeTx) Reset()         { *m = ExtensionOptionDynamicFeeTx{} }
