@@ -6,9 +6,9 @@ import (
 
 	rand "github.com/tendermint/tendermint/libs/rand"
 
-	"github.com/evmos/ethermint/ethereum/eip712"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/validationcloud/ethermint/ethereum/eip712"
 )
 
 type EIP712FuzzTestParams struct {
