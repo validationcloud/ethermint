@@ -88,7 +88,7 @@ type LegacyTx struct {
 	// nonce corresponds to the account nonce (transaction sequence).
 	Nonce uint64 `protobuf:"varint,1,opt,name=nonce,proto3" json:"nonce,omitempty"`
 	// gas_price defines the value for each gas unit
-	GasPrice *github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=gas_price,json=gasPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"gas_price,omitempty"`
+	GasPrice *github_com_cosmos_cosmos_sdk_types.IntProto `protobuf:"bytes,2,opt,name=gas_price,json=gasPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"gas_price,omitempty"`
 	// gas defines the gas limit defined for the transaction.
 	GasLimit uint64 `protobuf:"varint,3,opt,name=gas,proto3" json:"gas,omitempty"`
 	// to is the hex formatted address of the recipient
