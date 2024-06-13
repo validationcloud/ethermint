@@ -19,8 +19,10 @@ import (
 	"math/big"
 
 	errorsmod "cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+
 	"github.com/validationcloud/ethermint/types"
 )
 
@@ -41,7 +43,7 @@ func newLegacyTx(tx *ethtypes.Transaction) (*LegacyTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.Amount = &amountInt
+		txData.Amount = &sdk.IntProto{Int: amountInt}
 	}
 
 	if tx.GasPrice() != nil {
@@ -49,7 +51,7 @@ func newLegacyTx(tx *ethtypes.Transaction) (*LegacyTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.GasPrice = &gasPriceInt
+		txData.GasPrice = &sdk.IntProto{Int: gasPriceInt}
 	}
 
 	txData.SetSignatureValues(tx.ChainId(), v, r, s)
@@ -102,7 +104,7 @@ func (tx *LegacyTx) GetGasPrice() *big.Int {
 	if tx.GasPrice == nil {
 		return nil
 	}
-	return tx.GasPrice.BigInt()
+	return tx.GasPrice.Int.BigInt()
 }
 
 // GetGasTipCap returns the gas price field.
@@ -120,7 +122,7 @@ func (tx *LegacyTx) GetValue() *big.Int {
 	if tx.Amount == nil {
 		return nil
 	}
-	return tx.Amount.BigInt()
+	return tx.Amount.Int.BigInt()
 }
 
 // GetNonce returns the account sequence for the transaction.
