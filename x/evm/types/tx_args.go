@@ -1,18 +1,3 @@
-// Copyright 2021 Evmos Foundation
-// This file is part of Evmos' Ethermint library.
-//
-// The Ethermint library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The Ethermint library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
 package types
 
 import (
@@ -21,6 +6,7 @@ import (
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -119,23 +105,23 @@ func (args *TransactionArgs) ToTransaction() *MsgEthereumTx {
 
 		data = &DynamicFeeTx{
 			To:        to,
-			ChainID:   &chainID,
+			ChainID:   &sdk.IntProto{Int: chainID},
 			Nonce:     nonce,
 			GasLimit:  gas,
-			GasFeeCap: &maxFeePerGas,
-			GasTipCap: &maxPriorityFeePerGas,
-			Amount:    &value,
+			GasFeeCap: &sdk.IntProto{Int: maxFeePerGas},
+			GasTipCap: &sdk.IntProto{Int: maxPriorityFeePerGas},
+			Amount:    &sdk.IntProto{Int: value},
 			Data:      args.GetData(),
 			Accesses:  al,
 		}
 	case args.AccessList != nil:
 		data = &AccessListTx{
 			To:       to,
-			ChainID:  &chainID,
+			ChainID:  &sdk.IntProto{Int: chainID},
 			Nonce:    nonce,
 			GasLimit: gas,
-			GasPrice: &gasPrice,
-			Amount:   &value,
+			GasPrice: &sdk.IntProto{Int: gasPrice},
+			Amount:   &sdk.IntProto{Int: value},
 			Data:     args.GetData(),
 			Accesses: NewAccessList(args.AccessList),
 		}
@@ -144,8 +130,8 @@ func (args *TransactionArgs) ToTransaction() *MsgEthereumTx {
 			To:       to,
 			Nonce:    nonce,
 			GasLimit: gas,
-			GasPrice: &gasPrice,
-			Amount:   &value,
+			GasPrice: &sdk.IntProto{Int: gasPrice},
+			Amount:   &sdk.IntProto{Int: value},
 			Data:     args.GetData(),
 		}
 	}
