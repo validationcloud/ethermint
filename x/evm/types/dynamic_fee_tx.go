@@ -20,6 +20,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -45,7 +46,7 @@ func newDynamicFeeTx(tx *ethtypes.Transaction) (*DynamicFeeTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.Amount = &amountInt
+		txData.Amount = &sdk.IntProto{Int: amountInt}
 	}
 
 	if tx.GasFeeCap() != nil {
@@ -53,7 +54,7 @@ func newDynamicFeeTx(tx *ethtypes.Transaction) (*DynamicFeeTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.GasFeeCap = &gasFeeCapInt
+		txData.GasFeeCap = &sdk.IntProto{Int: gasFeeCapInt}
 	}
 
 	if tx.GasTipCap() != nil {
@@ -61,7 +62,7 @@ func newDynamicFeeTx(tx *ethtypes.Transaction) (*DynamicFeeTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.GasTipCap = &gasTipCapInt
+		txData.GasTipCap = &sdk.IntProto{Int: gasTipCapInt}
 	}
 
 	if tx.AccessList() != nil {
@@ -102,7 +103,7 @@ func (tx *DynamicFeeTx) GetChainID() *big.Int {
 		return nil
 	}
 
-	return tx.ChainID.BigInt()
+	return tx.ChainID.Int.BigInt()
 }
 
 // GetAccessList returns the AccessList field.
@@ -133,7 +134,7 @@ func (tx *DynamicFeeTx) GetGasTipCap() *big.Int {
 	if tx.GasTipCap == nil {
 		return nil
 	}
-	return tx.GasTipCap.BigInt()
+	return tx.GasTipCap.Int.BigInt()
 }
 
 // GetGasFeeCap returns the gas fee cap field.
@@ -141,7 +142,7 @@ func (tx *DynamicFeeTx) GetGasFeeCap() *big.Int {
 	if tx.GasFeeCap == nil {
 		return nil
 	}
-	return tx.GasFeeCap.BigInt()
+	return tx.GasFeeCap.Int.BigInt()
 }
 
 // GetValue returns the tx amount.
@@ -150,7 +151,7 @@ func (tx *DynamicFeeTx) GetValue() *big.Int {
 		return nil
 	}
 
-	return tx.Amount.BigInt()
+	return tx.Amount.Int.BigInt()
 }
 
 // GetNonce returns the account sequence for the transaction.
@@ -204,7 +205,7 @@ func (tx *DynamicFeeTx) SetSignatureValues(chainID, v, r, s *big.Int) {
 	}
 	if chainID != nil {
 		chainIDInt := sdkmath.NewIntFromBigInt(chainID)
-		tx.ChainID = &chainIDInt
+		tx.ChainID = &sdk.IntProto{Int: chainIDInt}
 	}
 }
 
@@ -218,11 +219,11 @@ func (tx DynamicFeeTx) Validate() error {
 		return errorsmod.Wrap(ErrInvalidGasCap, "gas fee cap cannot nil")
 	}
 
-	if tx.GasTipCap.IsNegative() {
+	if tx.GasTipCap.Int.IsNegative() {
 		return errorsmod.Wrapf(ErrInvalidGasCap, "gas tip cap cannot be negative %s", tx.GasTipCap)
 	}
 
-	if tx.GasFeeCap.IsNegative() {
+	if tx.GasFeeCap.Int.IsNegative() {
 		return errorsmod.Wrapf(ErrInvalidGasCap, "gas fee cap cannot be negative %s", tx.GasFeeCap)
 	}
 
@@ -234,7 +235,7 @@ func (tx DynamicFeeTx) Validate() error {
 		return errorsmod.Wrap(ErrInvalidGasCap, "out of bound")
 	}
 
-	if tx.GasFeeCap.LT(*tx.GasTipCap) {
+	if tx.GasFeeCap.Int.LT(tx.GasTipCap.Int) {
 		return errorsmod.Wrapf(
 			ErrInvalidGasCap, "max priority fee per gas higher than max fee per gas (%s > %s)",
 			tx.GasTipCap, tx.GasFeeCap,
@@ -282,7 +283,7 @@ func (tx DynamicFeeTx) Cost() *big.Int {
 
 // EffectiveGasPrice returns the effective gas price
 func (tx *DynamicFeeTx) EffectiveGasPrice(baseFee *big.Int) *big.Int {
-	return EffectiveGasPrice(baseFee, tx.GasFeeCap.BigInt(), tx.GasTipCap.BigInt())
+	return EffectiveGasPrice(baseFee, tx.GasFeeCap.Int.BigInt(), tx.GasTipCap.Int.BigInt())
 }
 
 // EffectiveFee returns effective_gasprice * gaslimit.
