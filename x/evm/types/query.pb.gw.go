@@ -19,7 +19,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/utilities"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -842,37 +841,6 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 	})
 
 	return nil
-}
-
-// RegisterQueryHandlerFromEndpoint is same as RegisterQueryHandler but
-// automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterQueryHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.Dial(endpoint, opts...)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err != nil {
-			if cerr := conn.Close(); cerr != nil {
-				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
-			}
-			return
-		}
-		go func() {
-			<-ctx.Done()
-			if cerr := conn.Close(); cerr != nil {
-				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
-			}
-		}()
-	}()
-
-	return RegisterQueryHandler(ctx, mux, conn)
-}
-
-// RegisterQueryHandler registers the http handlers for service Query to "mux".
-// The handlers forward requests to the grpc endpoint over "conn".
-func RegisterQueryHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterQueryHandlerClient(ctx, mux, NewQueryClient(conn))
 }
 
 // RegisterQueryHandlerClient registers the http handlers for service Query
