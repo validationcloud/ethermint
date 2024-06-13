@@ -20,6 +20,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -45,7 +46,7 @@ func newAccessListTx(tx *ethtypes.Transaction) (*AccessListTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.Amount = &amountInt
+		txData.Amount = &sdk.IntProto{Int: amountInt}
 	}
 
 	if tx.GasPrice() != nil {
@@ -53,7 +54,7 @@ func newAccessListTx(tx *ethtypes.Transaction) (*AccessListTx, error) {
 		if err != nil {
 			return nil, err
 		}
-		txData.GasPrice = &gasPriceInt
+		txData.GasPrice = &sdk.IntProto{Int: gasPriceInt}
 	}
 
 	if tx.AccessList() != nil {
@@ -93,7 +94,7 @@ func (tx *AccessListTx) GetChainID() *big.Int {
 		return nil
 	}
 
-	return tx.ChainID.BigInt()
+	return tx.ChainID.Int.BigInt()
 }
 
 // GetAccessList returns the AccessList field.
@@ -119,7 +120,7 @@ func (tx *AccessListTx) GetGasPrice() *big.Int {
 	if tx.GasPrice == nil {
 		return nil
 	}
-	return tx.GasPrice.BigInt()
+	return tx.GasPrice.Int.BigInt()
 }
 
 // GetGasTipCap returns the gas price field.
@@ -138,7 +139,7 @@ func (tx *AccessListTx) GetValue() *big.Int {
 		return nil
 	}
 
-	return tx.Amount.BigInt()
+	return tx.Amount.Int.BigInt()
 }
 
 // GetNonce returns the account sequence for the transaction.
@@ -191,7 +192,7 @@ func (tx *AccessListTx) SetSignatureValues(chainID, v, r, s *big.Int) {
 	}
 	if chainID != nil {
 		chainIDInt := sdkmath.NewIntFromBigInt(chainID)
-		tx.ChainID = &chainIDInt
+		tx.ChainID = &sdk.IntProto{Int: chainIDInt}
 	}
 }
 
