@@ -1,18 +1,3 @@
-// Copyright 2021 Evmos Foundation
-// This file is part of Evmos' Ethermint library.
-//
-// The Ethermint library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The Ethermint library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
 package types
 
 import (
@@ -22,6 +7,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	errorsmod "cosmossdk.io/errors"
+	cosmossdk_io_math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -60,23 +46,23 @@ func (cc ChainConfig) EthereumConfig(chainID *big.Int) *params.ChainConfig {
 
 // DefaultChainConfig returns default evm parameters.
 func DefaultChainConfig() ChainConfig {
-	homesteadBlock := sdk.ZeroInt()
-	daoForkBlock := sdk.ZeroInt()
-	eip150Block := sdk.ZeroInt()
-	eip155Block := sdk.ZeroInt()
-	eip158Block := sdk.ZeroInt()
-	byzantiumBlock := sdk.ZeroInt()
-	constantinopleBlock := sdk.ZeroInt()
-	petersburgBlock := sdk.ZeroInt()
-	istanbulBlock := sdk.ZeroInt()
-	muirGlacierBlock := sdk.ZeroInt()
-	berlinBlock := sdk.ZeroInt()
-	londonBlock := sdk.ZeroInt()
-	arrowGlacierBlock := sdk.ZeroInt()
-	grayGlacierBlock := sdk.ZeroInt()
-	mergeNetsplitBlock := sdk.ZeroInt()
-	shanghaiBlock := sdk.ZeroInt()
-	cancunBlock := sdk.ZeroInt()
+	homesteadBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	daoForkBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	eip150Block := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	eip155Block := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	eip158Block := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	byzantiumBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	constantinopleBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	petersburgBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	istanbulBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	muirGlacierBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	berlinBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	londonBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	arrowGlacierBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	grayGlacierBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	mergeNetsplitBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	shanghaiBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
+	cancunBlock := sdk.IntProto{Int: cosmossdk_io_math.ZeroInt()}
 
 	return ChainConfig{
 		HomesteadBlock:      &homesteadBlock,
