@@ -1,18 +1,21 @@
 name: Find Linear Issue in Pull Request
 
 on:
-  workflow_dispatch:
   pull_request:
-    types: [opened, reopened, edited]
+    # synchronize: without it a push leaves the required check stuck on "Expected".
+    types: [opened, reopened, synchronize, edited]
 
 jobs:
+  # Job name is the required-check context; don't rename it.
   check-linear-issue-on-pull-request:
+    if: "!contains(github.event.pull_request.labels.*.name, 'autorelease: pending')"
     runs-on: small
+    timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
       - name: Checkout Shared Github Actions Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: validationcloud/shared-github-actions
           ref: main
@@ -22,5 +25,4 @@ jobs:
       - name: Find the Linear Issue
         uses: ./shared-github-actions/check-linear-compliance
         with:
-          token: ${{ secrets.AUTOMATION_VC_PAT }}
           linear-api-key: ${{ secrets.LINEAR_API_KEY }}
